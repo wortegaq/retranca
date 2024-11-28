@@ -1,0 +1,190 @@
+/* Fondo del body */
+body {
+    background-color: #001f3f; /* Azul marino */
+    color: #ffffff; /* Texto blanco */
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Header */
+  .header {
+    background-color: #007bff; /* Azul brillante */
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    font-size: 2rem;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra */
+    margin-bottom: 1rem;
+  }
+  
+  /* Contenedor del buscador y filtros */
+  .filter-container {
+    display: flex;
+    flex-direction: column; /* Coloca elementos en una columna */
+    align-items: center;
+    gap: 1rem; /* Espaciado entre elementos */
+    margin: 1rem auto;
+    padding: 1rem;
+  }
+  
+  /* Estilo del input de búsqueda */
+  .search-input {
+    width: 80%;
+    max-width: 400px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    background-color: #001f3f; /* Azul marino */
+    color: #ffffff; /* Texto blanco */
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); /* Sombra azul */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .search-input::placeholder {
+    color: #bbbbbb; /* Texto gris claro */
+  }
+  
+  .search-input:focus {
+    outline: none;
+    border-color: #ffffff; /* Borde blanco */
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3); /* Sombra blanca */
+  }
+  
+  /* Estilo de los selects (región y subregión) */
+  .region-select,
+  .subregion-select {
+    width: 80%;
+    max-width: 400px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    background-color: #001f3f; /* Azul marino */
+    color: #ffffff; /* Texto blanco */
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .region-select:focus,
+  .subregion-select:focus {
+    outline: none;
+    border-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Contenedor principal */
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Diseño flexible */
+    gap: 1.5rem;
+    padding: 2rem;
+    background-color: #001f3f; /* Azul marino */
+  }
+  
+  /* Tarjetas de países */
+  .card {
+    border: 1px solid #007bff;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    background: #003366; /* Azul más oscuro */
+    color: #ffffff; /* Texto blanco */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra ligera */
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
+  }
+  
+  /* Imagen dentro de las tarjetas */
+  .flag {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #ffffff; /* Borde blanco */
+  }
+  
+  /* Título de la tarjeta */
+  .card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffeb3b; /* Amarillo brillante */
+    margin-top: 1rem;
+    text-transform: capitalize;
+  }
+  
+  /* Contenedor de detalles */
+  .detail-container {
+    text-align: center;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 2rem auto;
+    background: #ffffff; /* Fondo blanco */
+    color: #333; /* Texto oscuro */
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Sombra */
+    transition: opacity 0.5s ease-in-out, transform 0.3s ease;
+  }
+  
+  /* Imagen en los detalles */
+  .image {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+  
+  /* Nombre del país en los detalles */
+  .country-name {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff; /* Azul */
+    margin: 1rem 0;
+  }
+  
+  /* Texto de detalles */
+  .detail-text {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+    color: #555; /* Gris oscuro */
+    line-height: 1.6;
+  }
+  
+  /* Botón para volver */
+  .back-button {
+    display: block;
+    margin: 1.5rem auto 0;
+    padding: 0.5rem 1.5rem;
+    background: #007bff; /* Azul brillante */
+    color: #ffffff; /* Blanco */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .back-button:hover {
+    background: #0056b3; /* Azul más oscuro */
+    transform: scale(1.05);
+  }
+  
+  /* Estilo del mensaje de carga */
+  .loading {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 2rem 0;
+  }
+  

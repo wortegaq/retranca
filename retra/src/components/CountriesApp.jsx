@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
+import "./Countries.css";
 
 const CountriesApp = () => {
   const [countries, setCountries] = useState([]);
+  const [filteredCountries, setFilteredCountries] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("all"); // Filtro por región
+  const [selectedSubregion, setSelectedSubregion] = useState("all"); // Filtro por subregión
+  const [subregions, setSubregions] = useState([]); // Subregiones dinámicas
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -10,7 +16,8 @@ const CountriesApp = () => {
     fetch("https://restcountries.com/v3.1/all")
       .then((response) => response.json())
       .then((data) => {
-        setCountries(data); // Guardar datos de los países
+        setCountries(data);
+        setFilteredCountries(data);
         setLoading(false);
       })
       .catch((error) => {
@@ -19,140 +26,143 @@ const CountriesApp = () => {
       });
   }, []);
 
-  if (loading) return <p style={styles.loading}>Loading...</p>;
+  // Actualizar subregiones cuando cambia la región seleccionada
+  useEffect(() => {
+    if (selectedRegion === "all") {
+      setSubregions([]);
+    } else {
+      const regionSubregions = countries
+        .filter((country) => country.region.toLowerCase() === selectedRegion.toLowerCase())
+        .map((country) => country.subregion)
+        .filter((subregion, index, self) => subregion && self.indexOf(subregion) === index); // Eliminar duplicados
+      setSubregions(regionSubregions);
+    }
+    setSelectedSubregion("all"); // Restablecer el filtro de subregión
+  }, [selectedRegion, countries]);
+
+  // Filtrar países por término de búsqueda, región y subregión
+  useEffect(() => {
+    let filtered = countries;
+
+    // Filtro por región
+    if (selectedRegion !== "all") {
+      filtered = filtered.filter(
+        (country) => country.region.toLowerCase() === selectedRegion.toLowerCase()
+      );
+    }
+
+    // Filtro por subregión
+    if (selectedSubregion !== "all") {
+      filtered = filtered.filter(
+        (country) => country.subregion && country.subregion.toLowerCase() === selectedSubregion.toLowerCase()
+      );
+    }
+
+    // Filtro por término de búsqueda
+    if (searchTerm) {
+      filtered = filtered.filter((country) =>
+        country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredCountries(filtered);
+  }, [searchTerm, selectedRegion, selectedSubregion, countries]);
+
+  if (loading) return <p className="loading">Loading...</p>;
 
   // Mostrar detalles de un país seleccionado
   if (selectedCountry) {
     return (
-      <div style={styles.detailContainer}>
-        <button
-          style={styles.backButton}
-          onClick={() => setSelectedCountry(null)}
-        >
-          Volver
-        </button>
+      <div className="detail-container">
         <img
           src={selectedCountry.flags.png}
           alt={`Flag of ${selectedCountry.name.common}`}
-          style={styles.image}
+          className="image"
         />
-        <h2 style={styles.countryName}>{selectedCountry.name.common}</h2>
-        <p style={styles.detailText}>
+        <h2 className="country-name">{selectedCountry.name.common}</h2>
+        <p className="detail-text">
           <strong>Capital:</strong> {selectedCountry.capital?.[0] || "N/A"}
         </p>
-        <p style={styles.detailText}>
+        <p className="detail-text">
           <strong>Región:</strong> {selectedCountry.region}
         </p>
-        <p style={styles.detailText}>
+        <p className="detail-text">
           <strong>Subregión:</strong> {selectedCountry.subregion || "N/A"}
         </p>
-        <p style={styles.detailText}>
+        <p className="detail-text">
           <strong>Población:</strong> {selectedCountry.population.toLocaleString()}
         </p>
+        <button className="back-button" onClick={() => setSelectedCountry(null)}>
+          Volver
+        </button>
       </div>
     );
   }
 
-  // Mostrar lista de países
+  // Mostrar lista de países con buscador y filtros
   return (
-    <div style={styles.container}>
-      {countries.map((country) => (
-        <div
-          key={country.cca3}
-          style={styles.card}
-          onClick={() => setSelectedCountry(country)}
+    <div>
+      <header className="header">
+        <h1>Lista de Países</h1>
+      </header>
+
+      {/* Buscador y Filtros */}
+      <div className="filter-container">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Buscar país..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select
+          className="region-select"
+          value={selectedRegion}
+          onChange={(e) => setSelectedRegion(e.target.value)}
         >
-          <img
-            src={country.flags.png}
-            alt={`Flag of ${country.name.common}`}
-            style={styles.flag}
-          />
-          <h3 style={styles.cardTitle}>{country.name.common}</h3>
-        </div>
-      ))}
+          <option value="all">Todas las regiones</option>
+          <option value="africa">África</option>
+          <option value="americas">Américas</option>
+          <option value="asia">Asia</option>
+          <option value="europe">Europa</option>
+          <option value="oceania">Oceanía</option>
+        </select>
+        {subregions.length > 0 && (
+          <select
+            className="subregion-select"
+            value={selectedSubregion}
+            onChange={(e) => setSelectedSubregion(e.target.value)}
+          >
+            <option value="all">Todas las subregiones</option>
+            {subregions.map((subregion) => (
+              <option key={subregion} value={subregion.toLowerCase()}>
+                {subregion}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {/* Lista de países */}
+      <div className="container">
+        {filteredCountries.map((country) => (
+          <div
+            key={country.cca3}
+            className="card"
+            onClick={() => setSelectedCountry(country)}
+          >
+            <img
+              src={country.flags.png}
+              alt={`Flag of ${country.name.common}`}
+              className="flag"
+            />
+            <h3 className="card-title">{country.name.common}</h3>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-// Estilos en línea mejorados
-const styles = {
-  loading: {
-    textAlign: "center",
-    fontSize: "1.5rem",
-    fontWeight: "bold",
-    color: "#555",
-  },
-  container: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "1.5rem",
-    padding: "2rem",
-    background: "#f8f9fa",
-  },
-  card: {
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    padding: "1rem",
-    textAlign: "center",
-    background: "#fff",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    cursor: "pointer",
-    transition: "transform 0.2s, box-shadow 0.2s",
-  },
-  cardTitle: {
-    fontSize: "1.2rem",
-    fontWeight: "bold",
-    color: "#333",
-    marginTop: "1rem",
-  },
-  flag: {
-    width: "100%",
-    height: "150px",
-    objectFit: "cover",
-    borderRadius: "8px",
-  },
-  detailContainer: {
-    textAlign: "center",
-    padding: "2rem",
-    maxWidth: "600px",
-    margin: "0 auto",
-    background: "#fff",
-    borderRadius: "10px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  },
-  backButton: {
-    marginBottom: "1rem",
-    padding: "0.5rem 1.5rem",
-    background: "#007BFF",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    fontSize: "1rem",
-    fontWeight: "bold",
-    transition: "background 0.2s",
-  },
-  backButtonHover: {
-    background: "#0056b3",
-  },
-  countryName: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    marginTop: "1rem",
-    color: "#333",
-  },
-  image: {
-    width: "200px",
-    height: "150px",
-    objectFit: "cover",
-    borderRadius: "8px",
-    marginBottom: "1rem",
-  },
-  detailText: {
-    fontSize: "1.2rem",
-    margin: "0.5rem 0",
-    color: "#555",
-  },
-};
-
 export default CountriesApp;
+
